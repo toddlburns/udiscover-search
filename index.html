@@ -311,7 +311,9 @@
 
     // ─── Search ────────────────────────────────────────────────────────
     const SHOP = 'https://shop.udiscovermusic.com';
-    const PROXY = 'https://corsproxy.io/?url=';
+    const STOREFRONT_TOKEN = 'a951e5fbbd0e64b55496e82642ae06e5';
+    const STOREFRONT_URL = 'https://shop.udiscovermusic.com/api/2024-01/graphql.json';
+    const ALLORIGINS = 'https://api.allorigins.win/raw?url=';
     let debounceTimer = null;
     let currentQuery = '';
 
@@ -333,31 +335,70 @@
     async function search(query) {
       if (query !== currentQuery) return;
 
-      const endpoint = `${SHOP}/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=20`;
-
       try {
-        let data;
+        let products;
 
-        // Try direct first, fall back to CORS proxy
+        // Method 1: Shopify Storefront API (GraphQL, CORS-friendly)
         try {
-          const res = await fetch(endpoint);
-          if (!res.ok) throw new Error('Direct failed');
-          data = await res.json();
+          products = await searchViaStorefront(query);
         } catch {
-          const res = await fetch(PROXY + encodeURIComponent(endpoint));
-          if (!res.ok) throw new Error('Proxy failed');
-          data = await res.json();
+          // Method 2: search/suggest.json via allorigins proxy
+          products = await searchViaProxy(query);
         }
 
         if (query !== currentQuery) return;
-
-        const products = data?.resources?.results?.products || [];
         renderResults(products);
       } catch (err) {
         if (query !== currentQuery) return;
         document.getElementById('status').textContent = 'Search failed. Try again.';
         document.getElementById('results').innerHTML = '';
       }
+    }
+
+    async function searchViaStorefront(query) {
+      const gql = {
+        query: `{
+          search(first: 20, query: "${query.replace(/"/g, '\\"')}", types: PRODUCT) {
+            edges {
+              node {
+                ... on Product {
+                  id
+                  title
+                }
+              }
+            }
+          }
+        }`
+      };
+
+      const res = await fetch(STOREFRONT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN
+        },
+        body: JSON.stringify(gql)
+      });
+
+      if (!res.ok) throw new Error('Storefront API failed');
+      const json = await res.json();
+      if (json.errors) throw new Error('GraphQL error');
+
+      return json.data.search.edges.map(e => ({
+        id: e.node.id.replace('gid://shopify/Product/', ''),
+        title: e.node.title
+      }));
+    }
+
+    async function searchViaProxy(query) {
+      const endpoint = `${SHOP}/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=20`;
+      const res = await fetch(ALLORIGINS + encodeURIComponent(endpoint));
+      if (!res.ok) throw new Error('Proxy failed');
+      const data = await res.json();
+      return (data?.resources?.results?.products || []).map(p => ({
+        id: String(p.id),
+        title: p.title
+      }));
     }
 
     function renderResults(products) {
