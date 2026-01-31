@@ -24,212 +24,180 @@
       padding: 20px;
     }
 
-    #gate h1 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-      color: #fff;
-    }
-
-    #gate p {
-      font-size: 0.85rem;
-      color: #888;
-      margin-bottom: 24px;
-    }
-
-    #gate .input-row {
-      display: flex;
-      gap: 8px;
-    }
+    #gate h1 { font-size: 1.4rem; margin-bottom: 8px; color: #fff; }
+    #gate p { font-size: 0.85rem; color: #888; margin-bottom: 24px; }
+    #gate .input-row { display: flex; gap: 8px; }
 
     #gate input {
-      padding: 10px 16px;
-      font-size: 1rem;
-      border: 1px solid #333;
-      border-radius: 6px;
-      background: #1a1a1a;
-      color: #fff;
-      outline: none;
-      width: 260px;
+      padding: 10px 16px; font-size: 1rem; border: 1px solid #333;
+      border-radius: 6px; background: #1a1a1a; color: #fff;
+      outline: none; width: 260px;
     }
-
     #gate input:focus { border-color: #555; }
 
     #gate button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 6px;
-      background: #fff;
-      color: #000;
-      cursor: pointer;
-      font-weight: 600;
+      padding: 10px 20px; font-size: 1rem; border: none; border-radius: 6px;
+      background: #fff; color: #000; cursor: pointer; font-weight: 600;
     }
-
     #gate button:hover { background: #ddd; }
-
-    #gate .error {
-      color: #e54;
-      font-size: 0.85rem;
-      margin-top: 12px;
-      min-height: 20px;
-    }
+    #gate .error { color: #e54; font-size: 0.85rem; margin-top: 12px; min-height: 20px; }
 
     /* App */
     #app {
       display: none;
       max-width: 700px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 40px 20px 200px;
     }
 
-    #app h1 {
-      font-size: 1.5rem;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    #app .subtitle {
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 24px;
-    }
+    #app h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    #app .subtitle { font-size: 0.8rem; color: #666; margin-bottom: 24px; }
 
     #search-box {
-      width: 100%;
-      padding: 14px 18px;
-      font-size: 1.1rem;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background: #1a1a1a;
-      color: #fff;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; padding: 14px 18px; font-size: 1.1rem;
+      border: 1px solid #333; border-radius: 8px; background: #1a1a1a;
+      color: #fff; outline: none; transition: border-color 0.2s;
     }
-
     #search-box:focus { border-color: #555; }
-
     #search-box::placeholder { color: #555; }
 
-    #status {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 8px;
-      min-height: 20px;
-    }
+    #status { font-size: 0.8rem; color: #666; margin-top: 8px; min-height: 20px; }
 
-    #results {
-      margin-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    #results { margin-top: 16px; display: flex; flex-direction: column; gap: 2px; }
 
     .result {
-      padding: 12px 16px;
-      background: #1a1a1a;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      color: #ccc;
-      transition: background 0.15s, color 0.15s;
-      user-select: none;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 12px 16px; background: #1a1a1a; border-radius: 6px;
+      cursor: pointer; font-size: 0.95rem; color: #ccc;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      user-select: none; display: flex; justify-content: space-between;
+      align-items: center; border: 1px solid transparent;
     }
+    .result:hover { background: #252525; color: #fff; }
 
-    .result:hover {
-      background: #252525;
+    .result.selected {
+      background: #1a2a3a;
+      border-color: #3a7bd5;
       color: #fff;
     }
+
+    .result.selected .pid { color: #3a7bd5; }
+    .result.at-limit { opacity: 0.4; cursor: default; }
 
     .result-title {
-      flex: 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      flex: 1; min-width: 0; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
     }
+
+    .result-num {
+      display: none;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #3a7bd5; color: #fff; font-size: 0.75rem;
+      font-weight: 700; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-right: 10px;
+    }
+    .result.selected .result-num { display: flex; }
 
     .result-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-      margin-left: 12px;
+      display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; margin-left: 12px;
     }
 
-    .result .pid {
-      font-size: 0.75rem;
-      color: #555;
-      font-family: monospace;
-    }
+    .result .pid { font-size: 0.75rem; color: #555; font-family: monospace; }
 
     .open-link {
-      color: #666;
-      text-decoration: none;
-      font-size: 1rem;
-      line-height: 1;
-      padding: 2px 4px;
-      border-radius: 3px;
-      transition: color 0.15s, background 0.15s;
+      color: #666; text-decoration: none; font-size: 1rem; line-height: 1;
+      padding: 2px 4px; border-radius: 3px; transition: color 0.15s, background 0.15s;
+    }
+    .open-link:hover { color: #fff; background: #333; }
+
+    /* Tray */
+    #tray {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #161616; border-top: 1px solid #2a2a2a;
+      padding: 0; transform: translateY(100%);
+      transition: transform 0.25s ease;
+      z-index: 100;
+    }
+    #tray.open { transform: translateY(0); }
+
+    #tray-inner {
+      max-width: 700px; margin: 0 auto;
+      padding: 16px 20px;
     }
 
-    .open-link:hover {
-      color: #fff;
-      background: #333;
+    #tray-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 10px;
     }
 
-    .result.copied {
-      background: #1a3a1a;
-      color: #6f6;
+    #tray-header h2 { font-size: 0.85rem; color: #aaa; font-weight: 600; }
+
+    #tray-clear {
+      background: none; border: none; color: #666; font-size: 0.75rem;
+      cursor: pointer; padding: 4px 8px;
+    }
+    #tray-clear:hover { color: #e54; }
+
+    #selected-items {
+      display: flex; flex-direction: column; gap: 4px;
+      margin-bottom: 12px;
     }
 
-    .result.copied .pid {
-      color: #6f6;
+    .selected-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.85rem; color: #ccc;
+      background: #1a2a3a; border-radius: 4px; padding: 6px 10px;
     }
+
+    .selected-item .sel-num {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #3a7bd5; color: #fff; font-size: 0.65rem;
+      font-weight: 700; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0;
+    }
+
+    .selected-item .sel-title {
+      flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .selected-item .sel-remove {
+      background: none; border: none; color: #666;
+      cursor: pointer; font-size: 1rem; padding: 0 4px; line-height: 1;
+    }
+    .selected-item .sel-remove:hover { color: #e54; }
+
+    #shortcode-area {
+      background: #111; border: 1px solid #333; border-radius: 6px;
+      padding: 10px 14px; font-family: monospace; font-size: 0.8rem;
+      color: #4ec9b0; word-break: break-all; line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    #copy-shortcode {
+      width: 100%; padding: 10px; font-size: 0.95rem; font-weight: 600;
+      border: none; border-radius: 6px; cursor: pointer;
+      background: #3a7bd5; color: #fff; transition: background 0.15s;
+    }
+    #copy-shortcode:hover { background: #2a6bc5; }
+    #copy-shortcode.copied-btn { background: #2a8a4a; }
 
     .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
+      position: fixed; bottom: 30px; left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: #222;
-      color: #fff;
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      opacity: 0;
+      background: #222; color: #fff; padding: 10px 24px;
+      border-radius: 8px; font-size: 0.9rem; opacity: 0;
       transition: opacity 0.3s, transform 0.3s;
-      pointer-events: none;
-      border: 1px solid #333;
+      pointer-events: none; border: 1px solid #333; z-index: 200;
     }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .no-results {
-      text-align: center;
-      color: #555;
-      padding: 24px;
-      font-size: 0.9rem;
-    }
+    .no-results { text-align: center; color: #555; padding: 24px; font-size: 0.9rem; }
 
     #logout-btn {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      background: none;
-      border: 1px solid #333;
-      color: #666;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
+      position: fixed; top: 16px; right: 16px; background: none;
+      border: 1px solid #333; color: #666; padding: 6px 12px;
+      border-radius: 4px; font-size: 0.75rem; cursor: pointer;
     }
-
     #logout-btn:hover { color: #aaa; border-color: #555; }
   </style>
 </head>
@@ -249,40 +217,44 @@
   <!-- Main App -->
   <div id="app">
     <h1>uDiscover Quick Search</h1>
-    <p class="subtitle">Type an artist name. Click a result to copy its Product ID.</p>
+    <p class="subtitle">Search for products. Select up to 3, then copy the shortcode.</p>
     <input type="text" id="search-box" placeholder="Search for an artist..." autofocus>
     <div id="status"></div>
     <div id="results"></div>
     <button id="logout-btn" onclick="logout()">Lock</button>
   </div>
 
+  <!-- Selection Tray -->
+  <div id="tray">
+    <div id="tray-inner">
+      <div id="tray-header">
+        <h2 id="tray-title">1 product selected</h2>
+        <button id="tray-clear" onclick="clearSelection()">Clear all</button>
+      </div>
+      <div id="selected-items"></div>
+      <div id="shortcode-area"></div>
+      <button id="copy-shortcode" onclick="copyShortcode()">Copy Shortcode</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
     // ─── Password Protection ───────────────────────────────────────────
-    // Password hash is stored in localStorage on first setup.
-    // First visitor sets the password; subsequent visitors must enter it.
-    // To reset: clear localStorage or click Lock and revisit.
-
     async function sha256(str) {
       const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     const STORAGE_KEY = 'uds_pw_hash';
-
-    function getStoredHash() {
-      return localStorage.getItem(STORAGE_KEY);
-    }
+    function getStoredHash() { return localStorage.getItem(STORAGE_KEY); }
 
     async function handlePassword() {
       const input = document.getElementById('pw-input').value;
       if (!input) return;
       const hash = await sha256(input);
       const stored = getStoredHash();
-
       if (!stored) {
-        // First time: set the password
         localStorage.setItem(STORAGE_KEY, hash);
         sessionStorage.setItem('uds_auth', 'true');
         showApp();
@@ -323,19 +295,126 @@
       document.getElementById('pw-error').textContent = '';
       document.getElementById('results').innerHTML = '';
       document.getElementById('search-box').value = '';
+      clearSelection();
       showGate();
     }
 
-    // Enter key submits password
     document.getElementById('pw-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') handlePassword();
     });
 
-    // Check auth on load
     if (sessionStorage.getItem('uds_auth') === 'true' && getStoredHash()) {
       showApp();
     } else {
       showGate();
+    }
+
+    // ─── Selection State ───────────────────────────────────────────────
+    const MAX_SELECTED = 3;
+    let selected = []; // Array of { id, title, handle }
+
+    function toggleSelect(product) {
+      const idx = selected.findIndex(s => s.id === product.id);
+      if (idx !== -1) {
+        selected.splice(idx, 1);
+      } else {
+        if (selected.length >= MAX_SELECTED) return;
+        selected.push(product);
+      }
+      updateTray();
+      updateResultHighlights();
+    }
+
+    function removeSelected(id) {
+      selected = selected.filter(s => s.id !== id);
+      updateTray();
+      updateResultHighlights();
+    }
+
+    function clearSelection() {
+      selected = [];
+      updateTray();
+      updateResultHighlights();
+    }
+
+    function buildShortcode() {
+      const ids = selected.map(s => s.id).join(',');
+      if (selected.length === 1) {
+        return `[buy_button_single_product_pre]${ids}[buy_button_single_product_post]`;
+      } else if (selected.length === 2) {
+        return `[buy_button_two_products_pre]${ids}[buy_button_two_products_post]`;
+      } else if (selected.length === 3) {
+        return `[buy_button_three_products_pre]${ids}[buy_button_three_products_post]`;
+      }
+      return '';
+    }
+
+    function updateTray() {
+      const tray = document.getElementById('tray');
+      if (selected.length === 0) {
+        tray.classList.remove('open');
+        return;
+      }
+      tray.classList.add('open');
+
+      const count = selected.length;
+      document.getElementById('tray-title').textContent =
+        `${count} product${count !== 1 ? 's' : ''} selected`;
+
+      document.getElementById('selected-items').innerHTML = selected.map((s, i) => {
+        const title = escapeHtml(s.title);
+        const id = escapeHtml(s.id);
+        return `<div class="selected-item">
+          <span class="sel-num">${i + 1}</span>
+          <span class="sel-title">${title}</span>
+          <button class="sel-remove" onclick="removeSelected('${id}')" title="Remove">&times;</button>
+        </div>`;
+      }).join('');
+
+      document.getElementById('shortcode-area').textContent = buildShortcode();
+    }
+
+    function updateResultHighlights() {
+      const selectedIds = new Set(selected.map(s => s.id));
+      const atLimit = selected.length >= MAX_SELECTED;
+
+      document.querySelectorAll('.result').forEach(el => {
+        const id = el.dataset.id;
+        const isSelected = selectedIds.has(id);
+        el.classList.toggle('selected', isSelected);
+        el.classList.toggle('at-limit', atLimit && !isSelected);
+
+        const numEl = el.querySelector('.result-num');
+        if (numEl) {
+          const idx = selected.findIndex(s => s.id === id);
+          numEl.textContent = idx !== -1 ? idx + 1 : '';
+        }
+      });
+    }
+
+    async function copyShortcode() {
+      const code = buildShortcode();
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      const btn = document.getElementById('copy-shortcode');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied-btn');
+      showToast('Shortcode copied to clipboard');
+      setTimeout(() => {
+        btn.textContent = 'Copy Shortcode';
+        btn.classList.remove('copied-btn');
+      }, 2000);
     }
 
     // ─── Search ────────────────────────────────────────────────────────
@@ -350,31 +429,24 @@
       const q = e.target.value.trim();
       currentQuery = q;
       clearTimeout(debounceTimer);
-
       if (!q) {
         document.getElementById('results').innerHTML = '';
         document.getElementById('status').textContent = '';
         return;
       }
-
       document.getElementById('status').textContent = 'Searching...';
       debounceTimer = setTimeout(() => search(q), 300);
     });
 
     async function search(query) {
       if (query !== currentQuery) return;
-
       try {
         let products;
-
-        // Method 1: Shopify Storefront API (GraphQL, CORS-friendly)
         try {
           products = await searchViaStorefront(query);
         } catch {
-          // Method 2: search/suggest.json via allorigins proxy
           products = await searchViaProxy(query);
         }
-
         if (query !== currentQuery) return;
         renderResults(products);
       } catch (err) {
@@ -400,7 +472,6 @@
           }
         }`
       };
-
       const res = await fetch(STOREFRONT_URL, {
         method: 'POST',
         headers: {
@@ -409,11 +480,9 @@
         },
         body: JSON.stringify(gql)
       });
-
       if (!res.ok) throw new Error('Storefront API failed');
       const json = await res.json();
       if (json.errors) throw new Error('GraphQL error');
-
       return json.data.search.edges.map(e => ({
         id: e.node.id.replace('gid://shopify/Product/', ''),
         title: e.node.title,
@@ -436,12 +505,14 @@
     function renderResults(products) {
       const container = document.getElementById('results');
       const status = document.getElementById('status');
-
       if (products.length === 0) {
         status.textContent = '';
         container.innerHTML = '<div class="no-results">No results found.</div>';
         return;
       }
+
+      const selectedIds = new Set(selected.map(s => s.id));
+      const atLimit = selected.length >= MAX_SELECTED;
 
       status.textContent = `${products.length} result${products.length !== 1 ? 's' : ''}`;
       container.innerHTML = products.map(p => {
@@ -449,7 +520,11 @@
         const id = escapeHtml(String(p.id));
         const handle = escapeHtml(p.handle || '');
         const url = handle ? `${SHOP}/products/${handle}` : '';
-        return `<div class="result" data-id="${id}" onclick="copyProductId(this, '${id}')">
+        const isSelected = selectedIds.has(p.id);
+        const selIdx = selected.findIndex(s => s.id === p.id);
+        const selClass = isSelected ? ' selected' : (atLimit ? ' at-limit' : '');
+        return `<div class="result${selClass}" data-id="${id}" data-title="${title}" data-handle="${handle}" onclick="handleResultClick(this)">
+          <span class="result-num">${selIdx !== -1 ? selIdx + 1 : ''}</span>
           <span class="result-title">${title}</span>
           <span class="result-right">
             <span class="pid">${id}</span>
@@ -459,26 +534,13 @@
       }).join('');
     }
 
-    async function copyProductId(el, id) {
-      try {
-        await navigator.clipboard.writeText(id);
-        el.classList.add('copied');
-        showToast(`Copied: ${id}`);
-        setTimeout(() => el.classList.remove('copied'), 1500);
-      } catch {
-        // Fallback for older browsers
-        const ta = document.createElement('textarea');
-        ta.value = id;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        el.classList.add('copied');
-        showToast(`Copied: ${id}`);
-        setTimeout(() => el.classList.remove('copied'), 1500);
-      }
+    function handleResultClick(el) {
+      const product = {
+        id: el.dataset.id,
+        title: el.dataset.title,
+        handle: el.dataset.handle
+      };
+      toggleSelect(product);
     }
 
     function showToast(msg) {
