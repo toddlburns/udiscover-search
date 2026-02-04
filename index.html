@@ -66,13 +66,23 @@
     #results { margin-top: 16px; display: flex; flex-direction: column; gap: 2px; }
 
     .result {
-      padding: 12px 16px; background: #1a1a1a; border-radius: 6px;
+      padding: 10px 14px; background: #1a1a1a; border-radius: 6px;
       cursor: pointer; font-size: 0.95rem; color: #ccc;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
-      user-select: none; display: flex; justify-content: space-between;
+      user-select: none; display: flex;
       align-items: center; border: 1px solid transparent;
+      gap: 12px;
     }
     .result:hover { background: #252525; color: #fff; }
+
+    .result-thumb {
+      width: 50px; height: 50px; border-radius: 4px;
+      object-fit: cover; background: #252525; flex-shrink: 0;
+    }
+    .result-thumb-placeholder {
+      width: 50px; height: 50px; border-radius: 4px;
+      background: #252525; flex-shrink: 0;
+    }
 
     .result.selected {
       background: #1a2a3a;
@@ -82,6 +92,11 @@
 
     .result.selected .pid { color: #3a7bd5; }
     .result.at-limit { opacity: 0.4; cursor: default; }
+
+    .result-content {
+      flex: 1; min-width: 0; display: flex; justify-content: space-between;
+      align-items: center;
+    }
 
     .result-title {
       flex: 1; min-width: 0; overflow: hidden;
@@ -473,6 +488,9 @@
                   title
                   handle
                   availableForSale
+                  featuredImage {
+                    url(transform: {maxWidth: 100, maxHeight: 100})
+                  }
                 }
               }
             }
@@ -494,7 +512,8 @@
         id: e.node.id.replace('gid://shopify/Product/', ''),
         title: e.node.title,
         handle: e.node.handle,
-        availableForSale: e.node.availableForSale
+        availableForSale: e.node.availableForSale,
+        imageUrl: e.node.featuredImage?.url || ''
       }));
     }
 
@@ -506,7 +525,8 @@
       return (data?.resources?.results?.products || []).map(p => ({
         id: String(p.id),
         title: p.title,
-        handle: p.handle || p.url?.replace('/products/', '') || ''
+        handle: p.handle || p.url?.replace('/products/', '') || '',
+        imageUrl: p.featured_image?.url || p.image || ''
       }));
     }
 
@@ -532,14 +552,21 @@
         const selIdx = selected.findIndex(s => s.id === p.id);
         const selClass = isSelected ? ' selected' : (atLimit ? ' at-limit' : '');
         const soldOut = p.availableForSale === false;
+        const imageUrl = p.imageUrl || '';
+        const thumbHtml = imageUrl
+          ? `<img class="result-thumb" src="${escapeHtml(imageUrl)}" alt="" loading="lazy">`
+          : '<div class="result-thumb-placeholder"></div>';
         return `<div class="result${selClass}" data-id="${id}" data-title="${title}" data-handle="${handle}" onclick="handleResultClick(this)">
           <span class="result-num">${selIdx !== -1 ? selIdx + 1 : ''}</span>
-          <span class="result-title">${title}</span>
-          <span class="result-right">
-            ${soldOut ? '<span class="sold-out">Sold out</span>' : ''}
-            <span class="pid">${id}</span>
-            ${url ? `<a class="open-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open product page">&#x2197;</a>` : ''}
-          </span>
+          ${thumbHtml}
+          <div class="result-content">
+            <span class="result-title">${title}</span>
+            <span class="result-right">
+              ${soldOut ? '<span class="sold-out">Sold out</span>' : ''}
+              <span class="pid">${id}</span>
+              ${url ? `<a class="open-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open product page">&#x2197;</a>` : ''}
+            </span>
+          </div>
         </div>`;
       }).join('');
     }
