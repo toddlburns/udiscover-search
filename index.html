@@ -64,6 +64,38 @@
 
     #status { font-size: 0.8rem; color: #666; margin-top: 8px; min-height: 20px; }
 
+    /* Manual ID Input */
+    #manual-ids-section {
+      margin-top: 20px; padding-top: 20px;
+      border-top: 1px solid #2a2a2a;
+    }
+    #manual-ids-section h3 {
+      font-size: 0.85rem; color: #888; font-weight: 600; margin-bottom: 8px;
+    }
+    #manual-ids-section .helper {
+      font-size: 0.75rem; color: #555; margin-bottom: 8px;
+    }
+    #manual-ids-input {
+      width: 100%; padding: 10px 14px; font-size: 0.9rem;
+      font-family: monospace; border: 1px solid #333; border-radius: 6px;
+      background: #1a1a1a; color: #4ec9b0; outline: none;
+      resize: vertical; min-height: 60px;
+    }
+    #manual-ids-input:focus { border-color: #555; }
+    #manual-ids-input::placeholder { color: #444; }
+    #add-ids-btn {
+      margin-top: 8px; padding: 8px 16px; font-size: 0.85rem;
+      background: #3a7bd5; color: #fff; border: none; border-radius: 6px;
+      cursor: pointer; font-weight: 600;
+    }
+    #add-ids-btn:hover { background: #2a6bc5; }
+    #add-ids-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+    #manual-ids-status {
+      font-size: 0.75rem; color: #666; margin-top: 6px; min-height: 18px;
+    }
+    #manual-ids-status.error { color: #e54; }
+    #manual-ids-status.success { color: #4eca7a; }
+
     #results { margin-top: 16px; display: flex; flex-direction: column; gap: 2px; }
 
     .result {
@@ -194,6 +226,13 @@
     }
     .selected-item .sel-remove:hover { color: #e54; }
 
+    .selected-item.manual { background: #2a1a3a; }
+    .manual-badge {
+      font-size: 0.6rem; background: #9333ea; color: #fff;
+      padding: 2px 5px; border-radius: 3px; margin-left: 6px;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
     #shortcode-area {
       background: #111; border: 1px solid #333; border-radius: 6px;
       padding: 10px 14px; font-family: monospace; font-size: 0.8rem;
@@ -249,6 +288,14 @@
     <input type="text" id="search-box" placeholder="Search for an artist..." autofocus>
     <div id="status"></div>
     <div id="results"></div>
+
+    <div id="manual-ids-section">
+      <h3>Add Product IDs Directly</h3>
+      <p class="helper">Paste Shopify product IDs (comma or line separated) for unpublished products</p>
+      <textarea id="manual-ids-input" placeholder="8234567890123&#10;8234567890124&#10;8234567890125"></textarea>
+      <button id="add-ids-btn" onclick="addManualIds()">Add IDs to Selection</button>
+      <div id="manual-ids-status"></div>
+    </div>
     <button id="logout-btn" onclick="logout()">Lock</button>
   </div>
 
@@ -392,9 +439,10 @@
       document.getElementById('selected-items').innerHTML = selected.map((s, i) => {
         const title = escapeHtml(s.title);
         const id = escapeHtml(s.id);
-        return `<div class="selected-item">
+        const manualBadge = s.isManual ? '<span class="manual-badge">Manual</span>' : '';
+        return `<div class="selected-item${s.isManual ? ' manual' : ''}">
           <span class="sel-num">${i + 1}</span>
-          <span class="sel-title">${title}</span>
+          <span class="sel-title">${title}${manualBadge}</span>
           <button class="sel-remove" onclick="removeSelected('${id}')" title="Remove">&times;</button>
         </div>`;
       }).join('');
@@ -599,6 +647,94 @@
       d.textContent = str;
       return d.innerHTML;
     }
+
+    // ─── Manual ID Input ────────────────────────────────────────────────
+    function addManualIds() {
+      const input = document.getElementById('manual-ids-input');
+      const statusEl = document.getElementById('manual-ids-status');
+      const raw = input.value.trim();
+
+      if (!raw) {
+        statusEl.textContent = 'Please enter at least one ID';
+        statusEl.className = 'error';
+        return;
+      }
+
+      // Parse IDs (comma or newline separated)
+      const ids = raw
+        .split(/[\n,]+/)
+        .map(id => id.trim())
+        .filter(id => id.length > 0);
+
+      if (ids.length === 0) {
+        statusEl.textContent = 'No valid IDs found';
+        statusEl.className = 'error';
+        return;
+      }
+
+      // Validate IDs (should be numeric and reasonable length)
+      const invalidIds = ids.filter(id => !/^\d{10,15}$/.test(id));
+      if (invalidIds.length > 0) {
+        statusEl.textContent = `Invalid ID format: ${invalidIds.slice(0, 3).join(', ')}${invalidIds.length > 3 ? '...' : ''}`;
+        statusEl.className = 'error';
+        return;
+      }
+
+      // Check how many slots are available
+      const availableSlots = MAX_SELECTED - selected.length;
+      if (availableSlots <= 0) {
+        statusEl.textContent = 'Selection is full (max 3). Clear some first.';
+        statusEl.className = 'error';
+        return;
+      }
+
+      // Filter out already selected IDs
+      const newIds = ids.filter(id => !selected.some(s => s.id === id));
+      if (newIds.length === 0) {
+        statusEl.textContent = 'All IDs already selected';
+        statusEl.className = 'error';
+        return;
+      }
+
+      // Add IDs (up to available slots)
+      const toAdd = newIds.slice(0, availableSlots);
+      const skipped = newIds.length - toAdd.length;
+
+      toAdd.forEach(id => {
+        selected.push({
+          id: id,
+          title: `Product ID: ${id}`,
+          handle: '',
+          isManual: true
+        });
+      });
+
+      updateTray();
+      updateResultHighlights();
+
+      // Clear input and show success
+      input.value = '';
+      let msg = `Added ${toAdd.length} ID${toAdd.length !== 1 ? 's' : ''}`;
+      if (skipped > 0) {
+        msg += ` (${skipped} skipped - max 3 total)`;
+      }
+      statusEl.textContent = msg;
+      statusEl.className = 'success';
+
+      // Clear status after a moment
+      setTimeout(() => {
+        statusEl.textContent = '';
+        statusEl.className = '';
+      }, 3000);
+    }
+
+    // Allow Enter in textarea to add IDs (Shift+Enter for newline)
+    document.getElementById('manual-ids-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addManualIds();
+      }
+    });
   </script>
 </body>
 </html>
