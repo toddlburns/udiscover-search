@@ -137,9 +137,32 @@
       align-items: center;
     }
 
+    .result-title-wrap {
+      flex: 1; min-width: 0; display: flex; flex-direction: column;
+    }
+
     .result-title {
-      flex: 1; min-width: 0; overflow: hidden;
+      overflow: hidden;
       text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .result-artist {
+      font-size: 0.75rem;
+      background: linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0080ff, #8000ff, #ff0080);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbow-shift 3s linear infinite;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @keyframes rainbow-shift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
     }
 
     .result-num {
@@ -542,6 +565,7 @@
                   id
                   title
                   handle
+                  vendor
                   availableForSale
                   featuredImage {
                     url(transform: {maxWidth: 100, maxHeight: 100})
@@ -567,6 +591,7 @@
         id: e.node.id.replace('gid://shopify/Product/', ''),
         title: e.node.title,
         handle: e.node.handle,
+        vendor: e.node.vendor || '',
         availableForSale: e.node.availableForSale,
         imageUrl: e.node.featuredImage?.url || ''
       }));
@@ -602,6 +627,7 @@
         const title = escapeHtml(p.title);
         const id = escapeHtml(String(p.id));
         const handle = escapeHtml(p.handle || '');
+        const vendor = escapeHtml(p.vendor || '');
         const url = handle ? `${SHOP}/products/${handle}` : '';
         const isSelected = selectedIds.has(p.id);
         const selIdx = selected.findIndex(s => s.id === p.id);
@@ -611,11 +637,15 @@
         const thumbHtml = imageUrl
           ? `<img class="result-thumb" src="${escapeHtml(imageUrl)}" alt="" loading="lazy">`
           : '<div class="result-thumb-placeholder"></div>';
+        const artistHtml = vendor ? `<div class="result-artist">${vendor}</div>` : '';
         return `<div class="result${selClass}" data-id="${id}" data-title="${title}" data-handle="${handle}" onclick="handleResultClick(this)">
           <span class="result-num">${selIdx !== -1 ? selIdx + 1 : ''}</span>
           ${thumbHtml}
           <div class="result-content">
-            <span class="result-title">${title}</span>
+            <div class="result-title-wrap">
+              <span class="result-title">${title}</span>
+              ${artistHtml}
+            </div>
             <span class="result-right">
               ${soldOut ? '<span class="sold-out">Sold out</span>' : ''}
               <span class="pid">${id}</span>
